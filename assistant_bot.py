@@ -5,6 +5,7 @@
 Built with integrity — MIT License
 """
 import os
+import asyncio
 import ollama
 from dotenv import load_dotenv
 from telegram import Update
@@ -35,9 +36,9 @@ Hello! I'm your personal productivity companion.
 💎 Open-source: MIT License
 ⭐ GitHub: https://github.com/sweepinl8850-gif/ai-efficiency-assistant
 
-Sponsor my work: https://github.com/sponsors/sweepinl8850-gif
+Sponsor: https://github.com/sponsors/sweepinl8850-gif
 
-Send me any message and I'll reply! ⚡
+Send me any message! ⚡
 """
     await update.message.reply_text(welcome)
 
@@ -55,14 +56,23 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await update.message.reply_text(f"⚠️ Error: {str(e)[:80]}")
 
-if __name__ == "__main__":
+async def main():
     print("🚀 AI Efficiency Assistant — Starting...")
     print(f"🤖 Bot: @AI_Efficiency_Assistant_bot")
     print(f"🧠 Model: {MODEL}")
+    
     app = ApplicationBuilder().token(BOT_TOKEN).build()
-
+    
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
+    
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
     print("✅ READY — Message me on Telegram!")
-    app.run_polling()
+    
+    # Run forever
+    await asyncio.Event().wait()
+
+if __name__ == "__main__":
+    asyncio.run(main())
